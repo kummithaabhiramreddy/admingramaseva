@@ -23,26 +23,7 @@
             --clay-light: #e8724d;
         }
 
-        .signature-text {
-            font-family: 'Dancing Script', cursive;
-            font-size: 1.3rem;
-            color: #c8502a;
-            font-weight: 700;
-            display: block;
-            line-height: 1;
-            letter-spacing: -0.5px;
-        }
-
-        .admin-label {
-            font-size: 0.6rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            color: var(--text-light);
-            margin-bottom: 2px;
-            display: block;
-        }
-
+        /* Desktop admin profile (top right) */
         .admin-profile {
             display: flex;
             flex-direction: column;
@@ -52,31 +33,51 @@
             box-shadow: none;
             padding: 0;
         }
-
-        /* Mobile: show mini profile in header */
-        .mobile-admin-profile {
-            display: none;
-            flex-direction: column;
-            align-items: flex-end;
-            line-height: 1.1;
+        .admin-label {
+            font-size: 0.6rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-light);
+            margin-bottom: 2px;
+            display: block;
+        }
+        .signature-text {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.3rem;
+            color: #1e40af;
+            font-weight: 700;
+            display: block;
+            line-height: 1;
         }
 
+        /* Mobile: one-line CEO profile on right */
+        .mobile-admin-profile { display: none; }
+
         @media (max-width: 768px) {
-            .mobile-admin-profile { display: flex; }
+            .mobile-admin-profile {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 5px;
+                white-space: nowrap;
+            }
             .mobile-admin-label {
-                font-size: 0.45rem;
-                font-weight: 800;
+                font-size: 0.5rem;
+                font-weight: 700;
                 text-transform: uppercase;
-                letter-spacing: 0.1em;
-                color: rgba(255,255,255,0.4);
-                display: block;
+                letter-spacing: 0.08em;
+                color: rgba(255,255,255,0.45);
+            }
+            .mobile-admin-sep {
+                font-size: 0.5rem;
+                color: rgba(255,255,255,0.2);
             }
             .mobile-admin-signature {
                 font-family: 'Dancing Script', cursive;
-                font-size: 1rem;
-                color: #e8724d;
+                font-size: 0.95rem;
+                color: #60a5fa;
                 font-weight: 700;
-                display: block;
             }
         }
 
@@ -641,6 +642,18 @@
             .panel { padding: 12px; border-radius: 15px; }
             .panel-title { font-size: 0.75rem; font-weight: 800; }
             canvas { max-height: 200px !important; }
+
+            /* Mobile page title at top-left */
+            .mobile-page-title {
+                display: block;
+                font-size: 0.6rem;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                color: var(--text-light);
+                padding: 6px 12px 0;
+                margin-bottom: -4px;
+            }
         }
 
         .mobile-toggle { display: none; }
@@ -656,9 +669,10 @@
                 <h1>GramaSeva</h1>
                 <span>Admin Panel</span>
             </div>
-            <!-- Mobile: Admin name on right side -->
+            <!-- Mobile: one-line CEO profile right side -->
             <div class="mobile-admin-profile">
                 <span class="mobile-admin-label">System Admin</span>
+                <span class="mobile-admin-sep">·</span>
                 <span class="mobile-admin-signature">Abhiram Reddy</span>
             </div>
             <button class="mobile-toggle" onclick="toggleMenu()">☰</button>
@@ -684,6 +698,8 @@
 
     <!-- Main Content -->
     <main class="main-content">
+        <!-- Mobile page title breadcrumb -->
+        <div class="mobile-page-title" id="mobile-page-title" style="display:none;">📊 Dashboard</div>
         <header class="topbar">
             <div class="topbar-title">
                 <h2 id="topbar-title-text">Dashboard Overview</h2>
@@ -896,6 +912,19 @@
             document.getElementById('nav-menu').classList.toggle('open');
         }
 
+        // Mobile page title icons map
+        const pageTitles = {
+            'view-dashboard': '📊 Dashboard',
+            'view-workers': '👷 Workers',
+            'view-bookings': '📅 Bookings',
+            'view-customers': '👥 Customers'
+        };
+
+        function setMobilePageTitle(targetId) {
+            const el = document.getElementById('mobile-page-title');
+            if (el) el.textContent = pageTitles[targetId] || '';
+        }
+
         // Navigation Logic
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', (e) => {
@@ -908,12 +937,13 @@
                 // Close mobile menu
                 document.getElementById('nav-menu').classList.remove('open');
                 
-                // Update Title
+                // Update desktop title
                 const title = item.innerText.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '').trim();
                 document.getElementById('topbar-title-text').innerText = title;
 
-                // Show Section
+                // Update mobile page title (top-left breadcrumb) & show section
                 const targetId = item.getAttribute('data-target');
+                setMobilePageTitle(targetId);
                 document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
                 document.getElementById(targetId).classList.add('active');
 
