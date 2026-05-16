@@ -25,12 +25,59 @@
 
         .signature-text {
             font-family: 'Dancing Script', cursive;
-            font-size: 1.1rem;
-            color: var(--primary);
-            font-style: italic;
-            display: inline-block;
-            letter-spacing: 0;
-            transform: skewX(-10deg);
+            font-size: 1.3rem;
+            color: #c8502a;
+            font-weight: 700;
+            display: block;
+            line-height: 1;
+            letter-spacing: -0.5px;
+        }
+
+        .admin-label {
+            font-size: 0.6rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-light);
+            margin-bottom: 2px;
+            display: block;
+        }
+
+        .admin-profile {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            background: none;
+            border: none;
+            box-shadow: none;
+            padding: 0;
+        }
+
+        /* Mobile: show mini profile in header */
+        .mobile-admin-profile {
+            display: none;
+            flex-direction: column;
+            align-items: flex-end;
+            line-height: 1.1;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-admin-profile { display: flex; }
+            .mobile-admin-label {
+                font-size: 0.45rem;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                color: rgba(255,255,255,0.4);
+                display: block;
+            }
+            .mobile-admin-signature {
+                font-family: 'Dancing Script', cursive;
+                font-size: 1rem;
+                color: #e8724d;
+                font-weight: 700;
+                display: block;
+            }
         }
 
         * {
@@ -609,6 +656,11 @@
                 <h1>GramaSeva</h1>
                 <span>Admin Panel</span>
             </div>
+            <!-- Mobile: Admin name on right side -->
+            <div class="mobile-admin-profile">
+                <span class="mobile-admin-label">System Admin</span>
+                <span class="mobile-admin-signature">Abhiram Reddy</span>
+            </div>
             <button class="mobile-toggle" onclick="toggleMenu()">☰</button>
         </div>
         <nav class="nav-menu" id="nav-menu">
@@ -638,11 +690,8 @@
             </div>
             <div class="topbar-actions">
                 <div class="admin-profile">
-                    <div class="admin-avatar">AD</div>
-                    <div>
-                        <div style="font-weight: 700; font-size: 0.85rem;">System Admin</div>
-                        <div class="signature-text">-Ram</div>
-                    </div>
+                    <span class="admin-label">System Admin</span>
+                    <span class="signature-text">Abhiram Reddy</span>
                 </div>
             </div>
         </header>
