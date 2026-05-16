@@ -653,5 +653,53 @@ app.get('/api/admin/bookings', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// Admin Customers Analytics
+app.get('/api/admin/customers', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT 
+                customer_name, 
+                customer_phone, 
+                COUNT(*) as total_bookings,
+                COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed,
+                SUM(CASE WHEN status = 'completed' AND amount ~ '[0-9]' 
+                    THEN CAST(NULLIF(REGEXP_REPLACE(amount, '[^0-9.]', '', 'g'), '') AS NUMERIC) ELSE 0 END) as total_spent,
+                MAX(created_at) as last_booking
+            FROM bookings
+            GROUP BY customer_phone, customer_name
+            ORDER BY total_bookings DESC
+        `);
+        res.json(result.rows);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Toggle Worker Verification
+app.post('/api/admin/workers/:id/toggle-verify', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await pool.query('UPDATE workers SET is_verified = NOT COALESCE(is_verified, FALSE) WHERE worker_id = $1', [id]);
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Delete Worker
+app.delete('/api/admin/workers/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await pool.query('DELETE FROM workers WHERE worker_id = $1', [id]);
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Update Booking Status
+app.patch('/api/admin/bookings/:id/status', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        await pool.query('UPDATE bookings SET status = $1 WHERE booking_id = $2', [status, id]);
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 // Export for Vercel
 module.exports = app;
