@@ -220,27 +220,38 @@
             gap: 20px;
         }
 
+        /* Admin profile — no card, no border, inline row */
         .admin-profile {
             display: flex;
+            flex-direction: row;
             align-items: center;
-            gap: 12px;
-            padding: 8px 16px;
-            background: white;
-            border-radius: 50px;
-            border: 1px solid var(--border);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            gap: 6px;
+            background: none;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+            padding: 0;
         }
 
-        .admin-avatar {
-            width: 32px;
-            height: 32px;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: grid;
-            place-items: center;
+        .admin-label {
+            font-size: 0.7rem;
             font-weight: 700;
-            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-light);
+        }
+
+        .admin-sep {
+            font-size: 0.7rem;
+            color: #cbd5e1;
+        }
+
+        .signature-text {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.25rem;
+            color: #16a34a; /* Bold green — stands out clearly on white topbar */
+            font-weight: 700;
+            line-height: 1;
         }
 
         .content-area {
@@ -694,7 +705,8 @@
             </div>
             <div class="topbar-actions">
                 <div class="admin-profile">
-                    <span class="admin-label">System Admin</span>
+                    <span class="admin-label">Admin</span>
+                    <span class="admin-sep">·</span>
                     <span class="signature-text">Abhiram Reddy</span>
                 </div>
             </div>
