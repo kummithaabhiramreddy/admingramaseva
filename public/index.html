@@ -51,35 +51,55 @@
             line-height: 1;
         }
 
-        /* Mobile: one-line CEO profile on right */
+        /* Mobile: stacked profile (signature ABOVE Admin label) */
         .mobile-admin-profile { display: none; }
 
         @media (max-width: 768px) {
             .mobile-admin-profile {
                 display: flex;
-                flex-direction: row;
-                align-items: center;
-                gap: 4px;
-                white-space: nowrap;
+                flex-direction: column;   /* vertical stack */
+                align-items: flex-end;
+                gap: 0;
                 flex-shrink: 0;
-            }
-            .mobile-admin-label {
-                font-size: 0.48rem;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 0.06em;
-                color: rgba(255,255,255,0.5);
-            }
-            .mobile-admin-sep {
-                font-size: 0.5rem;
-                color: rgba(255,255,255,0.25);
+                line-height: 1.1;
             }
             .mobile-admin-signature {
                 font-family: 'Dancing Script', cursive;
-                font-size: 1.05rem;
-                color: #facc15; /* Bright golden-yellow — clearly visible on dark header */
+                font-size: 1rem;
+                color: #facc15;
                 font-weight: 700;
-                text-shadow: 0 0 8px rgba(250,204,21,0.4);
+                display: block;
+            }
+            .mobile-admin-label {
+                font-size: 0.42rem;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                color: rgba(255,255,255,0.45);
+                display: block;
+                text-align: right;
+            }
+            /* Hide the separator — not needed in vertical layout */
+            .mobile-admin-sep { display: none; }
+
+            /* Micro page heading strip below fixed header */
+            .mobile-page-heading {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                padding: 7px 14px;
+                background: white;
+                border-bottom: 1px solid #f1f5f9;
+                position: sticky;
+                top: 60px;
+                z-index: 100;
+            }
+            .mobile-page-heading span {
+                font-size: 0.6rem;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 0.12em;
+                color: var(--primary);
             }
         }
 
@@ -670,11 +690,10 @@
                 <h1>GramaSeva</h1>
                 <span>Admin Panel</span>
             </div>
-            <!-- Mobile: one-line CEO profile right side -->
+            <!-- Mobile: stacked profile right side (signature above, Admin below) -->
             <div class="mobile-admin-profile">
-                <span class="mobile-admin-label">System Admin</span>
-                <span class="mobile-admin-sep">·</span>
                 <span class="mobile-admin-signature">Abhiram Reddy</span>
+                <span class="mobile-admin-label">Admin</span>
             </div>
             <button class="mobile-toggle" onclick="toggleMenu()">☰</button>
         </div>
@@ -699,6 +718,10 @@
 
     <!-- Main Content -->
     <main class="main-content">
+        <!-- Micro page heading strip (mobile only) -->
+        <div class="mobile-page-heading" id="mobile-page-heading">
+            <span id="mobile-page-heading-text">📊 Dashboard</span>
+        </div>
         <header class="topbar">
             <div class="topbar-title">
                 <h2 id="topbar-title-text">Dashboard Overview</h2>
@@ -914,15 +937,19 @@
 
         // Mobile page title icons map
         const pageTitles = {
-            'view-dashboard': '📊 Dashboard',
-            'view-workers': '👷 Workers',
-            'view-bookings': '📅 Bookings',
+            'view-dashboard': '📊 Dashboard Overview',
+            'view-workers':   '👷 Workers',
+            'view-bookings':  '📅 Bookings',
             'view-customers': '👥 Customers'
         };
 
         function setMobilePageTitle(targetId) {
+            // Old (removed) title element — safe fallback
             const el = document.getElementById('mobile-page-title');
             if (el) el.textContent = pageTitles[targetId] || '';
+            // New micro heading strip
+            const heading = document.getElementById('mobile-page-heading-text');
+            if (heading) heading.textContent = pageTitles[targetId] || '';
         }
 
         // Navigation Logic
