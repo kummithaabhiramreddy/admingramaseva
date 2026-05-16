@@ -437,92 +437,87 @@
                 position: fixed; 
                 top: 0; 
                 left: 0; 
-                z-index: 2000;
+                z-index: 3000;
                 flex-direction: column;
                 box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-                border-radius: 0 0 15px 15px;
                 background: var(--sidebar-bg);
+                border-radius: 0;
             }
 
             .sidebar-header { 
                 padding: 10px 15px; 
                 gap: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
                 border-bottom: 1px solid rgba(255,255,255,0.05);
+                position: relative;
             }
-            .sidebar-header h1 { font-size: 1rem; }
-            .sidebar-header span { font-size: 0.5rem; }
-            .logo-mark { width: 30px; height: 30px; font-size: 14px; border-radius: 8px; }
+            .sidebar-header h1 { font-size: 0.9rem; }
+            .sidebar-header span { font-size: 0.45rem; }
+            .logo-mark { width: 28px; height: 28px; font-size: 14px; border-radius: 6px; }
+
+            .mobile-toggle {
+                display: block !important;
+                margin-left: auto;
+                background: rgba(255,255,255,0.1);
+                border: none;
+                color: white;
+                width: 32px;
+                height: 32px;
+                border-radius: 6px;
+                font-size: 1.2rem;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                line-height: 1;
+            }
 
             .nav-menu { 
-                flex-direction: row; 
-                overflow-x: auto; 
-                padding: 8px 10px; 
-                gap: 6px;
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
+                display: none; /* Hide by default on mobile */
+                flex-direction: column; 
+                padding: 5px; 
+                gap: 2px;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--sidebar-bg);
+                border-top: 1px solid rgba(255,255,255,0.05);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.4);
             }
-            .nav-menu::-webkit-scrollbar { display: none; }
+            .nav-menu.open { display: flex; }
             
             .nav-item { 
                 padding: 6px 12px; 
-                font-size: 0.7rem; 
+                font-size: 0.65rem; /* Micro size */
                 white-space: nowrap; 
-                border-radius: 8px;
-                background: rgba(255,255,255,0.05);
-                flex-shrink: 0;
+                border-radius: 6px;
+                background: transparent;
+                border: none;
             }
-            .nav-item i { font-size: 0.9rem; width: 16px; }
+            .nav-item.active { background: rgba(200, 80, 42, 0.2); }
+            .nav-item i { font-size: 0.8rem; width: 14px; }
 
             .main-content { 
                 margin-left: 0 !important; 
-                margin-top: 100px !important; 
+                margin-top: 55px !important; /* Compact header height */
                 width: 100%;
-                min-height: calc(100vh - 100px);
             }
 
             .topbar { display: none !important; }
 
-            .content-area { padding: 10px; overflow-x: hidden; }
-
-            .kpi-grid { 
-                grid-template-columns: repeat(2, 1fr); 
-                gap: 8px; 
-                margin-bottom: 15px;
-            }
-            .kpi-card { padding: 12px; border-radius: 12px; }
-            .kpi-value { font-size: 1.3rem; }
-            .kpi-title { font-size: 0.6rem; }
-            .kpi-icon { width: 28px; height: 28px; font-size: 0.9rem; }
-
-            .dashboard-grid { grid-template-columns: 1fr; gap: 15px; }
-            .panel { padding: 10px; border-radius: 12px; }
-            .panel-title { font-size: 0.9rem; }
-
-            .filter-bar { 
-                flex-direction: column; 
-                align-items: stretch; 
-                padding: 10px; 
-                gap: 8px;
-            }
-            .search-input, .filter-select, .btn-primary { width: 100%; font-size: 0.8rem; height: 38px; }
-
-            .table-container { 
-                margin: 0 -5px; 
-                padding: 0 5px;
-                width: calc(100% + 10px);
-            }
+            .content-area { padding: 10px; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+            .kpi-card { padding: 10px; }
+            .kpi-value { font-size: 1.2rem; }
+            .panel { padding: 8px; }
             
-            table th, table td { 
-                padding: 8px 6px; 
-                font-size: 0.7rem; 
-                line-height: 1.2;
-            }
-            
-            .badge { padding: 2px 6px; font-size: 0.6rem; }
-            .btn-action { padding: 3px 6px; font-size: 0.65rem; border-radius: 4px; }
-            
-            canvas { max-height: 180px !important; }
+            canvas { max-height: 150px !important; }
         }
+
+        .mobile-toggle { display: none; }
     </style>
 </head>
 <body>
@@ -533,26 +528,27 @@
             <div class="logo-mark">🌿</div>
             <div>
                 <h1>GramaSeva</h1>
-                <span>Command Center</span>
+                <span>Admin Panel</span>
             </div>
+            <button class="mobile-toggle" onclick="toggleMenu()">☰</button>
         </div>
-        <nav class="nav-menu">
+        <nav class="nav-menu" id="nav-menu">
             <a href="#" class="nav-item active" data-target="view-dashboard">
-                <i>📊</i> Dashboard Overview
+                <i>📊</i> Dashboard
             </a>
             <a href="#" class="nav-item" data-target="view-workers">
-                <i>👷‍♂️</i> Registered Workers
+                <i>👷‍♂️</i> Workers
             </a>
             <a href="#" class="nav-item" data-target="view-bookings">
-                <i>📅</i> Service Bookings
+                <i>📅</i> Bookings
             </a>
             <a href="#" class="nav-item" data-target="view-customers">
-                <i>👥</i> Customer Analytics
+                <i>👥</i> Customers
             </a>
+            <div style="padding: 10px; border-top: 1px solid rgba(255,255,255,0.05); text-align: center;">
+                <a href="index.html" style="color: var(--sidebar-text); text-decoration: none; font-size: 0.6rem; font-weight: 600;">← Exit Admin</a>
+            </div>
         </nav>
-        <div style="padding: 20px; border-top: 1px solid rgba(255,255,255,0.05); text-align: center;">
-            <a href="index.html" style="color: var(--sidebar-text); text-decoration: none; font-size: 0.8rem; font-weight: 600;">← Back to Main Site</a>
-        </div>
     </aside>
 
     <!-- Main Content -->
@@ -768,6 +764,11 @@
             : '/api';
         let chartInstance = null;
 
+        // Mobile Menu Toggle
+        function toggleMenu() {
+            document.getElementById('nav-menu').classList.toggle('open');
+        }
+
         // Navigation Logic
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', (e) => {
@@ -776,9 +777,13 @@
                 // Update Nav
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                 item.classList.add('active');
+
+                // Close mobile menu
+                document.getElementById('nav-menu').classList.remove('open');
                 
                 // Update Title
-                document.getElementById('topbar-title-text').innerText = item.innerText.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '').trim();
+                const title = item.innerText.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '').trim();
+                document.getElementById('topbar-title-text').innerText = title;
 
                 // Show Section
                 const targetId = item.getAttribute('data-target');
