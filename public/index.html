@@ -526,47 +526,47 @@
 
             .content-area { padding: 12px; gap: 15px; }
             
-            /* Micro Worker Cards */
-            #workers-table-body tr {
+            /* Micro Mobile Cards (Workers & Bookings) */
+            #workers-table-body tr, #bookings-table-body tr {
                 display: flex;
                 flex-direction: column;
                 background: white;
-                margin-bottom: 12px;
-                border-radius: 10px;
-                padding: 10px;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+                margin-bottom: 15px;
+                border-radius: 15px;
+                padding: 15px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.05);
                 border: 1px solid #f1f5f9;
             }
             
-            #workers-table-body td {
-                display: block; /* Stack labels and data */
-                padding: 3px 0;
+            #workers-table-body td, #bookings-table-body td {
+                display: block;
+                padding: 5px 0;
                 border-bottom: 1px solid #f8fafc;
-                font-size: 0.7rem; /* Micro size */
-                line-height: 1.2;
+                font-size: 0.75rem; /* Readable Micro */
+                line-height: 1.3;
             }
             
-            #workers-table-body td::before {
+            #workers-table-body td::before, #bookings-table-body td::before {
                 content: attr(data-label);
                 display: block;
                 font-weight: 800;
                 color: var(--text-light);
-                font-size: 0.55rem; /* Micro label */
+                font-size: 0.6rem;
                 text-transform: uppercase;
-                margin-bottom: 1px;
+                margin-bottom: 2px;
+                letter-spacing: 0.02em;
             }
             
-            #workers-table-body td:last-child {
+            #workers-table-body td:last-child, #bookings-table-body td:last-child {
                 border-bottom: none;
-                padding-top: 8px;
+                padding-top: 10px;
                 display: flex;
                 flex-direction: row;
-                justify-content: flex-start;
-                gap: 8px;
+                gap: 10px;
             }
 
-            /* Hide table headers on mobile */
-            #view-workers thead { display: none; }
+            /* Hide headers on mobile */
+            #view-workers thead, #view-bookings thead { display: none; }
             
             .filter-bar { flex-direction: column; gap: 8px; }
             .search-input, .filter-select, .btn-primary { width: 100%; }
@@ -1028,26 +1028,26 @@
 
                 const html = bookings.map(b => `
                     <tr>
-                        <td style="font-weight: 700; color: var(--primary);">${b.booking_id}</td>
-                        <td>
+                        <td data-label="Booking ID" style="font-weight: 700; color: var(--primary);">${b.booking_id}</td>
+                        <td data-label="Customer">
                             <div style="font-weight: 600;">${b.customer_name}</div>
                             <div style="font-size: 0.75rem; color: var(--text-light);">${b.customer_phone}</div>
                         </td>
-                        <td>
+                        <td data-label="Worker">
                             <div style="font-weight: 600;">${b.worker_name || 'N/A'}</div>
                             <div style="font-size: 0.75rem; color: var(--text-light);">${b.worker_trade || ''}</div>
                         </td>
-                        <td>${formatDate(b.service_date)}</td>
-                        <td style="font-weight: 600;">${b.amount}</td>
-                        <td>
-                            <select class="filter-select" style="padding: 4px 8px; font-size: 0.8rem; border-radius: 4px;" onchange="updateBookingStatus('${b.booking_id}', this.value)">
+                        <td data-label="Date">${formatDate(b.service_date)}</td>
+                        <td data-label="Amount" style="font-weight: 600;">${b.amount}</td>
+                        <td data-label="Status">
+                            <select class="filter-select" style="padding: 4px 8px; font-size: 0.8rem; border-radius: 4px; width: 100%;" onchange="updateBookingStatus('${b.booking_id}', this.value)">
                                 <option value="pending" ${b.status==='pending'?'selected':''}>Pending</option>
                                 <option value="completed" ${b.status==='completed'?'selected':''}>Completed</option>
                                 <option value="cancelled" ${b.status==='cancelled'?'selected':''}>Cancelled</option>
                             </select>
                         </td>
-                        <td>
-                            <button class="btn-action" style="background:#e2e8f0;" onclick="alert('View details for ${b.booking_id}')">View</button>
+                        <td data-label="Action">
+                            <button class="btn-action" style="background:#e2e8f0; width: 100%;" onclick="alert('View details for ${b.booking_id}')">View Details</button>
                         </td>
                     </tr>
                 `).join('');
