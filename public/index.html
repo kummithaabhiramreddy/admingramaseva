@@ -811,7 +811,14 @@
                     });
                     unlockSuccess();
                 } else {
-                    // Step 1: Register device for the first time
+                    // Step 1: Require Admin PIN to authorize biometric registration
+                    const pin = prompt("FIRST TIME SETUP: Enter the Admin PIN to authorize your device's fingerprint:");
+                    if (pin !== 'OSVJA@123') {
+                        showError("Incorrect Admin PIN. Device registration denied.");
+                        return;
+                    }
+
+                    // Register device for the first time
                     const credential = await navigator.credentials.create({
                         publicKey: {
                             challenge: getDummyChallenge(),
