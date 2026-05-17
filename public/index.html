@@ -759,6 +759,34 @@
             font-weight: 700;
             letter-spacing: 0.03em;
         }
+
+        /* Refresh Biometrics Button Styling */
+        .bio-btn.refresh-style {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed rgba(255, 255, 255, 0.12);
+            padding: 12px 15px;
+            border-radius: 14px;
+            box-shadow: none;
+        }
+        .bio-btn.refresh-style:hover {
+            background: rgba(239, 68, 68, 0.08);
+            border-color: rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
+        }
+        .bio-btn.refresh-style .text-label {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: color 0.3s;
+        }
+        .bio-btn.refresh-style:hover .text-label {
+            color: #fca5a5;
+        }
     </style>
 </head>
 <body>
@@ -788,6 +816,11 @@
                 <button id="facescan-btn" onclick="openFaceScanner()" class="bio-btn facescan-style">
                     <span class="icon-glow">👤</span>
                     <span class="text-label">Use Face Scan</span>
+                </button>
+
+                <!-- Refresh / Reset Biometrics Button -->
+                <button id="reset-biometrics-btn" onclick="resetBiometrics()" class="bio-btn refresh-style">
+                    <span class="text-label">🔄 Refresh Registrations</span>
                 </button>
             </div>
 
@@ -1163,6 +1196,38 @@
                 showError('Incorrect PIN!');
                 document.getElementById('admin-pin-input').value = '';
             }
+        }
+
+        // Reset and clear registered biometrics (Fingerprint and Face Scan)
+        function resetBiometrics() {
+            const pin = prompt("ADMIN AUTHORIZATION REQUIRED:\nEnter the secure Admin PIN to clear and refresh biometric registrations:");
+            if (pin !== 'OSVJA@123') {
+                showError("Incorrect PIN. Reset unauthorized.");
+                return;
+            }
+            
+            const fpRegistered = !!localStorage.getItem('admin_bio_id');
+            const faceRegistered = !!localStorage.getItem('admin_face_template');
+            
+            if (!fpRegistered && !faceRegistered) {
+                alert("No custom fingerprint or face scan registrations found to reset.");
+                return;
+            }
+            
+            localStorage.removeItem('admin_bio_id');
+            localStorage.removeItem('admin_face_template');
+            
+            // Show a sleek success status update
+            const status = document.getElementById('auth-status');
+            status.innerText = "Biometrics successfully reset!";
+            status.style.color = "#38bdf8"; // Celestial sky blue
+            status.style.opacity = '1';
+            
+            setTimeout(() => {
+                status.style.opacity = '0';
+            }, 3000);
+            
+            alert("Biometric registrations cleared! Both Fingerprint and Face Scan are now refreshed and ready for fresh registration.");
         }
 
         // Native WebAuthn Flow for Biometrics
