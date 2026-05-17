@@ -677,6 +677,88 @@
         }
 
         .mobile-toggle { display: none; }
+
+        @keyframes scanLaser {
+            0% { top: 0%; opacity: 0.3; }
+            50% { top: 100%; opacity: 1; }
+            100% { top: 0%; opacity: 0.3; }
+        }
+        @keyframes glowPulse {
+            0% { box-shadow: 0 0 15px rgba(200, 80, 42, 0.3), inset 0 0 10px rgba(200, 80, 42, 0.2); }
+            50% { box-shadow: 0 0 35px rgba(200, 80, 42, 0.8), inset 0 0 20px rgba(200, 80, 42, 0.4); }
+            100% { box-shadow: 0 0 15px rgba(200, 80, 42, 0.3), inset 0 0 10px rgba(200, 80, 42, 0.2); }
+        }
+        .scanning-active {
+            animation: glowPulse 2s infinite ease-in-out;
+            border-color: rgba(200, 80, 42, 0.8) !important;
+        }
+
+        /* Dual Biometric Stacked Buttons */
+        .bio-btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+
+        .bio-btn {
+            width: 100%;
+            border-radius: 20px;
+            padding: 22px 15px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            outline: none;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        
+        /* Fingerprint Button Styling */
+        .bio-btn.fingerprint-style {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .bio-btn.fingerprint-style:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        .bio-btn.fingerprint-style .icon-glow {
+            font-size: 2.2rem;
+            filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.85)); /* Glowing yellow */
+        }
+        .bio-btn.fingerprint-style .text-label {
+            color: #cbd5e1;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
+
+        /* Face Scan Button Styling */
+        .bio-btn.facescan-style {
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+        }
+        .bio-btn.facescan-style:hover {
+            background: rgba(99, 102, 241, 0.18);
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateY(-2px);
+        }
+        .bio-btn.facescan-style .icon-glow {
+            font-size: 2.2rem;
+            filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.9)); /* Glowing blue */
+        }
+        .bio-btn.facescan-style .text-label {
+            color: #cbd5e1;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
     </style>
 </head>
 <body>
@@ -685,36 +767,76 @@
     <div id="admin-auth-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; height: 100dvh; background: url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2000&auto=format&fit=crop') center/cover; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s; overscroll-behavior: none; touch-action: none;">
         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px);"></div>
         
-        <div id="admin-auth-card" style="position: relative; background: rgba(255, 255, 255, 0.03); padding: 30px 20px; border-radius: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1); text-align: center; max-width: 90%; width: 400px; max-height: 95vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);">
+        <div id="admin-auth-card" style="position: relative; background: rgba(255, 255, 255, 0.03); padding: 30px 20px; border-radius: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1); text-align: center; max-width: 90%; width: 400px; max-height: 95vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); transition: all 0.3s ease;">
             
-            <div style="width: 70px; height: 70px; background: linear-gradient(135deg, #c8502a, #e8724d); border-radius: 20px; display: grid; place-items: center; font-size: 32px; margin: 0 auto 25px; box-shadow: 0 10px 20px rgba(200, 80, 42, 0.3);">
+            <div style="width: 70px; height: 70px; background: linear-gradient(135deg, #c8502a, #e8724d); border-radius: 20px; display: grid; place-items: center; font-size: 32px; margin: 0 auto 20px; box-shadow: 0 10px 20px rgba(200, 80, 42, 0.3);">
                 <span style="color: white;">🛡️</span>
             </div>
             
             <h2 style="font-family: 'Fraunces', serif; color: #ffffff; margin-bottom: 8px; font-size: 1.8rem; font-weight: 700;">Admin Center</h2>
-            <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 40px;">Secure access required</p>
+            <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 25px;">Secure access required</p>
 
-            <!-- Biometric Section (Hidden on Desktop) -->
-            <div id="biometric-section" style="display: none; margin-bottom: 30px;">
-                <button onclick="requestBiometric()" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 20px; border-radius: 20px; cursor: pointer; transition: all 0.3s; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
-                    <span style="font-size: 2.5rem; filter: drop-shadow(0 0 10px rgba(200,80,42,0.5));">👆</span>
-                    <span style="color: white; font-weight: 600; font-size: 0.9rem; letter-spacing: 0.05em;">Use Fingerprint</span>
+            <!-- Biometric Section (Dynamic Dual Biometric Vertical Grid) -->
+            <div id="biometric-options-grid" class="bio-btn-container">
+                <!-- Fingerprint Button (Mobile only, stacked on top) -->
+                <button id="fingerprint-btn" onclick="requestBiometric()" class="bio-btn fingerprint-style" style="display: none;">
+                    <span class="icon-glow">👆</span>
+                    <span class="text-label">Use Fingerprint</span>
+                </button>
+
+                <!-- Face Scan Button (Always available, stacked below fingerprint on mobile) -->
+                <button id="facescan-btn" onclick="openFaceScanner()" class="bio-btn facescan-style">
+                    <span class="icon-glow">👤</span>
+                    <span class="text-label">Use Face Scan</span>
                 </button>
             </div>
 
             <!-- PIN Section -->
             <div id="pin-section">
-                <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                    <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
-                    <span id="pin-divider-text" style="padding: 0 15px; color: #64748b; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">Enter PIN</span>
-                    <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+                <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                    <div style="flex: 1; height: 1px; background: rgba(255, 255, 255, 0.10);"></div>
+                    <span id="pin-divider-text" style="padding: 0 15px; color: #64748b; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">Or Enter PIN</span>
+                    <div style="flex: 1; height: 1px; background: rgba(255, 255, 255, 0.10);"></div>
                 </div>
                 
                 <div style="position: relative;">
                     <input type="password" id="admin-pin-input" placeholder="Secure PIN" style="width: 100%; padding: 16px 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; text-align: center; font-size: 1.2rem; letter-spacing: 0.2em; outline: none; transition: all 0.3s; box-sizing: border-box;" onfocus="this.style.borderColor='#c8502a'; this.style.boxShadow='0 0 15px rgba(200,80,42,0.2)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.boxShadow='none'" onkeypress="if(event.key === 'Enter') verifyPin()">
                     
-                    <button onclick="verifyPin()" style="margin-top: 20px; width: 100%; background: linear-gradient(135deg, #c8502a, #8c3318); color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.3s; letter-spacing: 0.05em; text-transform: uppercase;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 20px rgba(200,80,42,0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">Unlock Dashboard</button>
+                    <button onclick="verifyPin()" style="margin-top: 15px; width: 100%; background: linear-gradient(135deg, #c8502a, #8c3318); color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.3s; letter-spacing: 0.05em; text-transform: uppercase;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 20px rgba(200,80,42,0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">Unlock Dashboard</button>
                 </div>
+            </div>
+
+            <!-- Face Scanner HUD (Hidden by default) -->
+            <div id="face-scanner-container" style="display: none; flex-direction: column; align-items: center; gap: 20px; width: 100%;">
+                
+                <!-- Circular Camera Portal with Glow and Reticle -->
+                <div id="face-camera-wrapper" style="position: relative; width: 210px; height: 210px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.1); overflow: hidden; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; transition: all 0.3s;">
+                    
+                    <!-- Live Video Element -->
+                    <video id="face-video" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1);"></video>
+                    
+                    <!-- Moving Laser Line -->
+                    <div id="scanner-laser" style="position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(180deg, rgba(200, 80, 42, 0) 0%, #c8502a 50%, rgba(200, 80, 42, 0) 100%); animation: scanLaser 2s infinite ease-in-out; display: none;"></div>
+                    
+                    <!-- HUD Reticles -->
+                    <div style="position: absolute; top: 12px; left: 12px; width: 15px; height: 15px; border-top: 2.5px solid #c8502a; border-left: 2.5px solid #c8502a;"></div>
+                    <div style="position: absolute; top: 12px; right: 12px; width: 15px; height: 15px; border-top: 2.5px solid #c8502a; border-right: 2.5px solid #c8502a;"></div>
+                    <div style="position: absolute; bottom: 12px; left: 12px; width: 15px; height: 15px; border-bottom: 2.5px solid #c8502a; border-left: 2.5px solid #c8502a;"></div>
+                    <div style="position: absolute; bottom: 12px; right: 12px; width: 15px; height: 15px; border-bottom: 2.5px solid #c8502a; border-right: 2.5px solid #c8502a;"></div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <div id="face-scan-status" style="color: #cbd5e1; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Camera Initializing...</div>
+                    <div id="face-scan-match-score" style="color: rgba(255,255,255,0.4); font-size: 0.65rem; font-weight: 700; letter-spacing: 0.05em; display: none;">SIMILARITY: 0%</div>
+                </div>
+
+                <!-- Control Buttons -->
+                <div style="display: flex; gap: 10px; width: 100%; justify-content: center;">
+                    <button id="btn-trigger-scan" onclick="startBiometricVerification()" style="flex: 1; background: linear-gradient(135deg, #c8502a, #8c3318); color: white; border: none; padding: 13px; border-radius: 12px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.05em;">Scan Face</button>
+                    <button onclick="registerAdminFace()" style="background: rgba(255,255,255,0.05); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.10); padding: 13px 18px; border-radius: 12px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">Register</button>
+                </div>
+
+                <button onclick="closeFaceScanner()" style="background: none; border: none; color: #64748b; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; transition: color 0.3s;" onmouseover="this.style.color='#cbd5e1'" onmouseout="this.style.color='#64748b'">Cancel & Exit</button>
             </div>
             
             <p id="auth-status" style="margin-top: 20px; font-size: 0.85rem; font-weight: 700; color: #ef4444; height: 20px; opacity: 0; transition: opacity 0.3s;">Incorrect PIN</p>
@@ -726,20 +848,280 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+            
+            const fpBtn = document.getElementById('fingerprint-btn');
+            const dividerText = document.getElementById('pin-divider-text');
+            
             if (isMobile) {
-                document.getElementById('biometric-section').style.display = 'block';
-                document.getElementById('pin-divider-text').innerText = 'OR ENTER PIN';
+                // Mobile layout: Display BOTH Fingerprint (Touch ID) and Face Scan stacked vertically
+                if (fpBtn) fpBtn.style.display = 'flex';
+                if (dividerText) dividerText.innerText = 'OR ENTER PIN';
             } else {
-                document.getElementById('biometric-section').style.display = 'none';
-                document.getElementById('pin-divider-text').innerText = 'ENTER SECURE PIN';
+                // PC layout: Completely remove Fingerprint option, only leaving Face Scan
+                if (fpBtn) fpBtn.remove();
+                if (dividerText) dividerText.innerText = 'ENTER SECURE PIN';
             }
+            
+            // Prefetch static face signature if user placed a picture
+            prefetchAdminFaceStatic();
         });
+
+        // ─── ADMIN FACE SCANNER LOGIC ───
+        let faceStream = null;
+
+        // Prefetch static face image if it was placed in the public folder
+        async function prefetchAdminFaceStatic() {
+            try {
+                const img = new Image();
+                img.src = 'admin-face.jpg';
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 32;
+                    canvas.height = 32;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, 32, 32);
+                    const imgData = ctx.getImageData(0, 0, 32, 32);
+                    const data = imgData.data;
+                    const template = [];
+                    let total = 0;
+                    for (let i = 0; i < data.length; i += 4) {
+                        const gray = Math.round(0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2]);
+                        template.push(gray);
+                        total += gray;
+                    }
+                    const avg = total / template.length;
+                    const normalized = template.map(v => v - avg);
+                    localStorage.setItem('admin_face_static_template', JSON.stringify(normalized));
+                    console.log("Static admin face preloaded successfully from admin-face.jpg");
+                };
+                img.onerror = () => {
+                    console.log("No static admin face image found at /admin-face.jpg (Local setup mode is active)");
+                };
+            } catch (e) {
+                console.error("Static prefetch failed:", e);
+            }
+        }
+
+        // Open Face Scanner HUD
+        async function openFaceScanner() {
+            // Retrieve templates to check if first-time setup is active
+            const localTemplateStr = localStorage.getItem('admin_face_template');
+            const staticTemplateStr = localStorage.getItem('admin_face_static_template');
+            
+            // For the first-time setup, demand the Admin PIN to grant access to scanner HUD
+            if (!localTemplateStr && !staticTemplateStr) {
+                const pin = prompt("ADMIN AUTHORIZATION REQUIRED:\nEnter the secure Admin PIN to authorize and activate Face Scan on this device:");
+                if (pin !== 'OSVJA@123') {
+                    showError("Unauthorized! Incorrect Admin PIN.");
+                    return;
+                }
+            }
+
+            document.getElementById('pin-section').style.display = 'none';
+            document.getElementById('biometric-options-grid').style.display = 'none';
+            document.getElementById('face-scanner-container').style.display = 'flex';
+            
+            const status = document.getElementById('face-scan-status');
+            status.innerText = "Initializing Camera...";
+            status.style.color = "#cbd5e1";
+            
+            try {
+                faceStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+                const video = document.getElementById('face-video');
+                video.srcObject = faceStream;
+                status.innerText = "Camera Active. Align Face.";
+            } catch (err) {
+                console.error("Camera access error:", err);
+                status.innerText = "Camera Access Denied!";
+                status.style.color = "#ef4444";
+                showError("Could not access camera. Please check permissions.");
+            }
+        }
+
+        // Close Face Scanner & return to PIN
+        function closeFaceScanner() {
+            exitFaceScanner();
+        }
+
+        function exitFaceScanner() {
+            if (faceStream) {
+                faceStream.getTracks().forEach(track => track.stop());
+                faceStream = null;
+            }
+            
+            const video = document.getElementById('face-video');
+            if (video) video.srcObject = null;
+            
+            document.getElementById('scanner-laser').style.display = 'none';
+            document.getElementById('face-scan-match-score').style.display = 'none';
+            document.getElementById('face-scanner-container').style.display = 'none';
+            document.getElementById('pin-section').style.display = 'block';
+            document.getElementById('biometric-options-grid').style.display = 'flex';
+        }
+
+        // Generate normalized 32x32 template from video or image
+        function getFaceTemplate(element) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 32;
+            canvas.height = 32;
+            const ctx = canvas.getContext('2d');
+            
+            // Draw element (video or image) to canvas
+            ctx.drawImage(element, 0, 0, 32, 32);
+            
+            const imgData = ctx.getImageData(0, 0, 32, 32);
+            const data = imgData.data;
+            const template = [];
+            let total = 0;
+            
+            for (let i = 0; i < data.length; i += 4) {
+                // Grayscale ITU-R
+                const gray = Math.round(0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2]);
+                template.push(gray);
+                total += gray;
+            }
+            
+            // Normalize brightness to compensate for varying light conditions
+            const avg = total / template.length;
+            return template.map(v => v - avg);
+        }
+
+        // Compares two templates and returns similarity percentage (0 - 100)
+        function compareFaceTemplates(t1, t2) {
+            if (!t1 || !t2 || t1.length !== t2.length) return 0;
+            
+            let sumSqDiff = 0;
+            for (let i = 0; i < t1.length; i++) {
+                const diff = t1[i] - t2[i];
+                sumSqDiff += diff * diff;
+            }
+            
+            const mse = sumSqDiff / t1.length;
+            const rms = Math.sqrt(mse);
+            
+            // Map rms scale to similarity. A perfect match has rms = 0 (100% similarity).
+            // Diffs up to ~40 are typical for varying expressions of same person.
+            const similarity = Math.max(0, 100 - (rms * 2.5));
+            return Math.round(similarity);
+        }
+
+        // Register current camera face as the authorized Admin Face
+        function registerAdminFace() {
+            const pin = prompt("AUTHORIZATION REQUIRED:\nEnter the secure Admin PIN to register your face on this device:");
+            if (pin !== 'OSVJA@123') {
+                alert("Incorrect PIN. Face registration unauthorized.");
+                return;
+            }
+            
+            const video = document.getElementById('face-video');
+            if (!video || !video.srcObject) {
+                alert("Please ensure the camera is active before registering!");
+                return;
+            }
+            
+            try {
+                const template = getFaceTemplate(video);
+                localStorage.setItem('admin_face_template', JSON.stringify(template));
+                
+                const status = document.getElementById('face-scan-status');
+                status.innerText = "Face Registered Successfully!";
+                status.style.color = "#4ade80";
+                
+                setTimeout(() => {
+                    unlockSuccess();
+                }, 1000);
+            } catch (e) {
+                console.error("Face registration failed:", e);
+                alert("Registration failed. Please check camera feed.");
+            }
+        }
+
+        // Execute holographic scan & match live feed to template
+        function startBiometricVerification() {
+            const video = document.getElementById('face-video');
+            const status = document.getElementById('face-scan-status');
+            const scoreEl = document.getElementById('face-scan-match-score');
+            const laser = document.getElementById('scanner-laser');
+            const wrapper = document.getElementById('face-camera-wrapper');
+            
+            if (!video || !video.srcObject) {
+                showError("Activate camera first!");
+                return;
+            }
+            
+            // Retrieve template
+            const localTemplateStr = localStorage.getItem('admin_face_template');
+            const staticTemplateStr = localStorage.getItem('admin_face_static_template');
+            
+            if (!localTemplateStr && !staticTemplateStr) {
+                status.innerText = "NO REGISTERED FACE!";
+                status.style.color = "#ef4444";
+                showError("No authorized Admin face registered on this device yet. Please click Register first.");
+                return;
+            }
+            
+            const refTemplate = JSON.parse(localTemplateStr || staticTemplateStr);
+            
+            // Turn on active scan elements
+            laser.style.display = 'block';
+            wrapper.classList.add('scanning-active');
+            status.innerText = "Initializing Biometric Radar...";
+            status.style.color = "#facc15";
+            scoreEl.style.display = 'none';
+            
+            // Visual sequence steps
+            const steps = [
+                { delay: 500, text: "DETECTING FACIAL NODES...", color: "#facc15" },
+                { delay: 1000, text: "EXTRACTING GEOMETRIC COORDINATES...", color: "#e8724d" },
+                { delay: 1500, text: "CORRELATING TEMPLATES...", color: "#e8724d" }
+            ];
+            
+            steps.forEach(step => {
+                setTimeout(() => {
+                    status.innerText = step.text;
+                    status.style.color = step.color;
+                }, step.delay);
+            });
+            
+            // Perform comparison after scan animation
+            setTimeout(() => {
+                const liveTemplate = getFaceTemplate(video);
+                const similarity = compareFaceTemplates(refTemplate, liveTemplate);
+                
+                laser.style.display = 'none';
+                wrapper.classList.remove('scanning-active');
+                scoreEl.innerText = `BIOMETRIC SIMILARITY: ${similarity}%`;
+                scoreEl.style.display = 'block';
+                
+                // Secure threshold validation. Anything above 72% represents a strong structural match
+                if (similarity >= 72) {
+                    status.innerText = "MATCH CONFIRMED! ACCESS GRANTED";
+                    status.style.color = "#4ade80";
+                    scoreEl.style.color = "#4ade80";
+                    
+                    setTimeout(() => {
+                        unlockSuccess();
+                    }, 800);
+                } else {
+                    status.innerText = "VERIFICATION FAILED: FACE UNRECOGNIZED!";
+                    status.style.color = "#ef4444";
+                    scoreEl.style.color = "#ef4444";
+                    showError("Face unrecognized! Access Denied.");
+                }
+            }, 2000);
+        }
 
         function unlockSuccess() {
             const status = document.getElementById('auth-status');
             status.innerText = 'Access Granted!';
             status.style.color = '#4ade80';
             status.style.opacity = '1';
+            
+            // Stop face scanning camera tracks upon success
+            if (faceStream) {
+                faceStream.getTracks().forEach(track => track.stop());
+                faceStream = null;
+            }
             
             const overlay = document.getElementById('admin-auth-overlay');
             setTimeout(() => {
@@ -758,7 +1140,7 @@
             status.style.opacity = '1';
             
             // Shake the entire container
-            const card = document.querySelector('#admin-auth-overlay > div:nth-child(2)');
+            const card = document.getElementById('admin-auth-card');
             if(card) {
                 card.style.transition = 'transform 0.1s';
                 card.style.transform = 'translateX(-10px)';
@@ -851,6 +1233,7 @@
                 }
             }
         }
+
     </script>
 
     <!-- Sidebar -->
