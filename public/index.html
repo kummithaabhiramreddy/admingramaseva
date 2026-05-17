@@ -681,6 +681,171 @@
 </head>
 <body>
 
+    <!-- Admin Login Overlay -->
+    <div id="admin-auth-overlay" style="position: fixed; inset: 0; background: url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2000&auto=format&fit=crop') center/cover; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s;">
+        <div style="position: absolute; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px);"></div>
+        
+        <div style="position: relative; background: rgba(255, 255, 255, 0.03); padding: 50px 40px; border-radius: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1); text-align: center; max-width: 90%; width: 400px; border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);">
+            
+            <div style="width: 70px; height: 70px; background: linear-gradient(135deg, #c8502a, #e8724d); border-radius: 20px; display: grid; place-items: center; font-size: 32px; margin: 0 auto 25px; box-shadow: 0 10px 20px rgba(200, 80, 42, 0.3);">
+                <span style="color: white;">🛡️</span>
+            </div>
+            
+            <h2 style="font-family: 'Fraunces', serif; color: #ffffff; margin-bottom: 8px; font-size: 1.8rem; font-weight: 700;">Admin Center</h2>
+            <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 40px;">Secure access required</p>
+
+            <!-- Biometric Section (Hidden on Desktop) -->
+            <div id="biometric-section" style="display: none; margin-bottom: 30px;">
+                <button onclick="requestBiometric()" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 20px; border-radius: 20px; cursor: pointer; transition: all 0.3s; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+                    <span style="font-size: 2.5rem; filter: drop-shadow(0 0 10px rgba(200,80,42,0.5));">👆</span>
+                    <span style="color: white; font-weight: 600; font-size: 0.9rem; letter-spacing: 0.05em;">Use Fingerprint</span>
+                </button>
+            </div>
+
+            <!-- PIN Section -->
+            <div id="pin-section">
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+                    <span id="pin-divider-text" style="padding: 0 15px; color: #64748b; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">Enter PIN</span>
+                    <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+                </div>
+                
+                <div style="position: relative;">
+                    <input type="password" id="admin-pin-input" placeholder="Secure PIN" style="width: 100%; padding: 16px 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; text-align: center; font-size: 1.2rem; letter-spacing: 0.2em; outline: none; transition: all 0.3s; box-sizing: border-box;" onfocus="this.style.borderColor='#c8502a'; this.style.boxShadow='0 0 15px rgba(200,80,42,0.2)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.boxShadow='none'" onkeypress="if(event.key === 'Enter') verifyPin()">
+                    
+                    <button onclick="verifyPin()" style="margin-top: 20px; width: 100%; background: linear-gradient(135deg, #c8502a, #8c3318); color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.3s; letter-spacing: 0.05em; text-transform: uppercase;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 20px rgba(200,80,42,0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">Unlock Dashboard</button>
+                </div>
+            </div>
+            
+            <p id="auth-status" style="margin-top: 20px; font-size: 0.85rem; font-weight: 700; color: #ef4444; height: 20px; opacity: 0; transition: opacity 0.3s;">Incorrect PIN</p>
+        </div>
+    </div>
+
+    <script>
+        document.body.style.overflow = 'hidden';
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+            if (isMobile) {
+                document.getElementById('biometric-section').style.display = 'block';
+                document.getElementById('pin-divider-text').innerText = 'OR ENTER PIN';
+            } else {
+                document.getElementById('biometric-section').style.display = 'none';
+                document.getElementById('pin-divider-text').innerText = 'ENTER SECURE PIN';
+            }
+        });
+
+        function unlockSuccess() {
+            const status = document.getElementById('auth-status');
+            status.innerText = 'Access Granted!';
+            status.style.color = '#4ade80';
+            status.style.opacity = '1';
+            
+            const overlay = document.getElementById('admin-auth-overlay');
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    document.body.style.overflow = '';
+                }, 500);
+            }, 600);
+        }
+
+        function showError(msg) {
+            const status = document.getElementById('auth-status');
+            status.innerText = msg;
+            status.style.color = '#ef4444';
+            status.style.opacity = '1';
+            
+            // Shake the entire container
+            const card = document.querySelector('#admin-auth-overlay > div:nth-child(2)');
+            if(card) {
+                card.style.transition = 'transform 0.1s';
+                card.style.transform = 'translateX(-10px)';
+                setTimeout(() => card.style.transform = 'translateX(10px)', 100);
+                setTimeout(() => card.style.transform = 'translateX(-10px)', 200);
+                setTimeout(() => card.style.transform = 'translateX(10px)', 300);
+                setTimeout(() => {
+                    card.style.transform = 'translateX(0)';
+                    setTimeout(() => card.style.transition = '', 100);
+                }, 400);
+            }
+        }
+
+        function verifyPin() {
+            const pin = document.getElementById('admin-pin-input').value;
+            // Strict Admin PIN validation
+            if(pin === 'OSVJA@123') {
+                unlockSuccess();
+            } else {
+                showError('Incorrect PIN!');
+                document.getElementById('admin-pin-input').value = '';
+            }
+        }
+
+        // Native WebAuthn Flow for Biometrics
+        function getDummyChallenge() {
+            const arr = new Uint8Array(32);
+            window.crypto.getRandomValues(arr);
+            return arr;
+        }
+
+        async function requestBiometric() {
+            if (!window.PublicKeyCredential) {
+                showError("Biometrics not supported on this browser.");
+                return;
+            }
+
+            try {
+                const credentialIdStr = localStorage.getItem('admin_bio_id');
+                
+                if (credentialIdStr) {
+                    // Step 2: Authenticate using existing credential
+                    const credId = Uint8Array.from(atob(credentialIdStr), c => c.charCodeAt(0));
+                    await navigator.credentials.get({
+                        publicKey: {
+                            challenge: getDummyChallenge(),
+                            allowCredentials: [{ type: 'public-key', id: credId }],
+                            userVerification: 'required'
+                        }
+                    });
+                    unlockSuccess();
+                } else {
+                    // Step 1: Register device for the first time
+                    const credential = await navigator.credentials.create({
+                        publicKey: {
+                            challenge: getDummyChallenge(),
+                            rp: { name: "GramaSeva Admin" },
+                            user: {
+                                id: getDummyChallenge(),
+                                name: "admin",
+                                displayName: "Admin"
+                            },
+                            pubKeyCredParams: [{ type: "public-key", alg: -7 }], // ES256
+                            authenticatorSelection: {
+                                authenticatorAttachment: "platform", // forces native fingerprint/faceID
+                                userVerification: "required"
+                            },
+                            timeout: 60000
+                        }
+                    });
+                    
+                    // Save for future logins
+                    const newCredIdStr = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
+                    localStorage.setItem('admin_bio_id', newCredIdStr);
+                    unlockSuccess();
+                }
+            } catch (err) {
+                console.error(err);
+                if(err.name === 'NotAllowedError') {
+                    showError("Biometric auth cancelled.");
+                } else {
+                    showError("Biometrics failed. Use PIN.");
+                }
+            }
+        }
+    </script>
+
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
