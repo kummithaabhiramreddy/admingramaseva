@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Admin Command Center - GramaSeva</title>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Fraunces:ital,wght@0,700;0,900;1,400&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -787,15 +787,81 @@
         .bio-btn.refresh-style:hover .text-label {
             color: #fca5a5;
         }
+
+        /* Mobile-locked viewport and overlay stabilization styles */
+        body.auth-locked {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            height: 100dvh !important;
+            overflow: hidden !important;
+            overscroll-behavior: none !important;
+        }
+
+        @media (max-width: 480px) {
+            #admin-auth-card {
+                padding: 24px 16px !important;
+                border-radius: 24px !important;
+                max-height: 90vh !important;
+                overscroll-behavior: contain !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+            .bio-btn-container {
+                gap: 10px !important;
+                margin-bottom: 18px !important;
+            }
+            .bio-btn {
+                padding: 14px 16px !important;
+                flex-direction: row !important;
+                border-radius: 14px !important;
+                gap: 12px !important;
+                align-items: center !important;
+                justify-content: center !important;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+            }
+            .bio-btn .icon-glow {
+                font-size: 1.5rem !important;
+            }
+            .bio-btn .text-label {
+                font-size: 0.82rem !important;
+            }
+            .bio-btn.refresh-style {
+                padding: 10px 14px !important;
+                border-radius: 12px !important;
+            }
+            .bio-btn.refresh-style .text-label {
+                font-size: 0.72rem !important;
+            }
+            #face-camera-wrapper {
+                width: 160px !important;
+                height: 160px !important;
+            }
+            #pin-section div[style*="margin-bottom: 20px"] {
+                margin-bottom: 12px !important;
+            }
+            #admin-pin-input {
+                padding: 12px 16px !important;
+                font-size: 1.05rem !important;
+                border-radius: 12px !important;
+            }
+            #pin-section button {
+                margin-top: 10px !important;
+                padding: 12px !important;
+                font-size: 0.9rem !important;
+                border-radius: 12px !important;
+            }
+        }
     </style>
 </head>
-<body>
+<body class="auth-locked">
 
     <!-- Admin Login Overlay -->
-    <div id="admin-auth-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; height: 100dvh; background: url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2000&auto=format&fit=crop') center/cover; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s; overscroll-behavior: none; touch-action: none;">
+    <div id="admin-auth-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; height: 100dvh; background: url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2000&auto=format&fit=crop') center/cover; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s; overscroll-behavior: none; touch-action: auto;">
         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px);"></div>
         
-        <div id="admin-auth-card" style="position: relative; background: rgba(255, 255, 255, 0.03); padding: 30px 20px; border-radius: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1); text-align: center; max-width: 90%; width: 400px; max-height: 95vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); transition: all 0.3s ease;">
+        <div id="admin-auth-card" style="position: relative; background: rgba(255, 255, 255, 0.03); padding: 30px 20px; border-radius: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1); text-align: center; max-width: 90%; width: 400px; max-height: 95vh; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); transition: all 0.3s ease;">
             
             <div style="width: 70px; height: 70px; background: linear-gradient(135deg, #c8502a, #e8724d); border-radius: 20px; display: grid; place-items: center; font-size: 32px; margin: 0 auto 20px; box-shadow: 0 10px 20px rgba(200, 80, 42, 0.3);">
                 <span style="color: white;">🛡️</span>
@@ -872,7 +938,63 @@
     </div>
 
     <script>
+        // Ensure body is locked on load
+        document.body.classList.add('auth-locked');
         document.body.style.overflow = 'hidden';
+
+        // Stabilize fixed overlay layout on mobile devices when visual viewport changes (e.g. keyboard open/close)
+        const stabilizeViewport = () => {
+            const overlay = document.getElementById('admin-auth-overlay');
+            if (overlay && overlay.style.display !== 'none') {
+                if (window.visualViewport) {
+                    overlay.style.height = `${window.visualViewport.height}px`;
+                    overlay.style.top = `${window.visualViewport.offsetTop}px`;
+                } else {
+                    overlay.style.height = '100dvh';
+                    overlay.style.top = '0px';
+                }
+            }
+        };
+
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', stabilizeViewport);
+            window.visualViewport.addEventListener('scroll', stabilizeViewport);
+        }
+
+        // Prevent body touch-scrolling through overlay background, while allowing scroll inside the card
+        document.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.getElementById('admin-auth-overlay');
+            const card = document.getElementById('admin-auth-card');
+            
+            if (overlay && card) {
+                overlay.addEventListener('touchmove', (e) => {
+                    // Check if scroll target is inside the card
+                    let target = e.target;
+                    let isInsideCard = false;
+                    while (target && target !== overlay) {
+                        if (target === card) {
+                            isInsideCard = true;
+                            break;
+                        }
+                        target = target.parentNode;
+                    }
+                    
+                    if (!isInsideCard) {
+                        // Dragging on overlay background: completely block scroll
+                        e.preventDefault();
+                    } else {
+                        // Dragging inside card: allow vertical scroll, block chaining
+                        const isScrollable = card.scrollHeight > card.clientHeight;
+                        if (!isScrollable) {
+                            e.preventDefault();
+                        }
+                    }
+                }, { passive: false });
+            }
+            
+            // Adjust overlay height initially
+            stabilizeViewport();
+        });
 
         document.addEventListener("DOMContentLoaded", () => {
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
@@ -1178,6 +1300,7 @@
                 setTimeout(() => {
                     overlay.style.display = 'none';
                     document.body.style.overflow = '';
+                    document.body.classList.remove('auth-locked');
                 }, 500);
             }, 600);
         }
